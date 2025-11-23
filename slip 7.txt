@@ -1,0 +1,157 @@
+slip 7
+
+1.
+// Command Interface with undo
+interface Command {
+    void execute();
+    void undo();
+}
+
+// Receiver
+class CeilingFan {
+    public static final int HIGH = 3;
+    public static final int MEDIUM = 2;
+    public static final int LOW = 1;
+    public static final int OFF = 0;
+
+    private int speed = OFF;
+
+    public void high() {
+        speed = HIGH;
+        System.out.println("Ceiling Fan: HIGH");
+    }
+    public void medium() {
+        speed = MEDIUM;
+        System.out.println("Ceiling Fan: MEDIUM");
+    }
+    public void low() {
+        speed = LOW;
+        System.out.println("Ceiling Fan: LOW");
+    }
+    public void off() {
+        speed = OFF;
+        System.out.println("Ceiling Fan: OFF");
+    }
+    public int getSpeed() {
+        return speed;
+    }
+}
+
+// Command to set fan to HIGH
+class CeilingFanHighCommand implements Command {
+    CeilingFan fan;
+    int prevSpeed;
+
+    CeilingFanHighCommand(CeilingFan fan) {
+        this.fan = fan;
+    }
+
+    public void execute() {
+        prevSpeed = fan.getSpeed();
+        fan.high();
+    }
+
+    public void undo() {
+        if (prevSpeed == CeilingFan.HIGH) fan.high();
+        else if (prevSpeed == CeilingFan.MEDIUM) fan.medium();
+        else if (prevSpeed == CeilingFan.LOW) fan.low();
+        else fan.off();
+    }
+}
+
+// Command to turn fan off
+class CeilingFanOffCommand implements Command {
+    CeilingFan fan;
+    int prevSpeed;
+
+    CeilingFanOffCommand(CeilingFan fan) {
+        this.fan = fan;
+    }
+
+    public void execute() {
+        prevSpeed = fan.getSpeed();
+        fan.off();
+    }
+
+    public void undo() {
+        if (prevSpeed == CeilingFan.HIGH) fan.high();
+        else if (prevSpeed == CeilingFan.MEDIUM) fan.medium();
+        else if (prevSpeed == CeilingFan.LOW) fan.low();
+        else fan.off();
+    }
+}
+
+// Remote with undo button
+class RemoteControl {
+    Command slot;
+    Command undoCommand;
+
+    public void setCommand(Command command) {
+        slot = command;
+    }
+
+    public void pressButton() {
+        slot.execute();
+        undoCommand = slot;
+    }
+
+    public void pressUndo() {
+        System.out.println("Undoing...");
+        undoCommand.undo();
+    }
+}
+
+// MAIN
+public class Main {
+    public static void main(String[] args) {
+
+        CeilingFan fan = new CeilingFan();
+        Command fanHigh = new CeilingFanHighCommand(fan);
+        Command fanOff = new CeilingFanOffCommand(fan);
+
+        RemoteControl remote = new RemoteControl();
+
+        // Turn HIGH
+        System.out.println("---- Fan HIGH ----");
+        remote.setCommand(fanHigh);
+        remote.pressButton();
+
+        // Undo HIGH
+        System.out.println("---- Undo ----");
+        remote.pressUndo();
+
+        // Turn OFF
+        System.out.println("---- Fan OFF ----");
+        remote.setCommand(fanOff);
+        remote.pressButton();
+
+        // Undo OFF
+        System.out.println("---- Undo ----");
+        remote.pressUndo();
+    }
+}
+
+
+2.
+Program:
+const int ledPin = 5;
+const int ldrPin = A0;
+
+void setup(){
+Serial.begin(9600);
+pinMode(ledPin,OUTPUT);
+pinMode(ldrPin,INPUT);
+}
+
+void loop(){
+int ldrStatus = analogRead(ldrPin);
+if(ldrStatus <= 200){
+digitalWrite(ledPin,HIGH);
+Serial.print("Darkness, then LED ON: ");
+Serial.println(ldrStatus);
+}
+else{
+digitalWrite(ledPin,LOW);
+Serial.print("Darkness, then LED off: ");
+Serial.println(ldrStatus);
+}

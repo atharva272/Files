@@ -1,0 +1,150 @@
+slip 11
+
+1.
+
+// ----- Target Interface (what client expects) -----
+interface BeatModel {
+    int getBPM();
+    void start();
+    void stop();
+}
+
+// ----- Adaptee (already existing Heart model) -----
+class HeartModel {
+    private int heartRate = 72;
+
+    public int getHeartRate() {
+        return heartRate;
+    }
+
+    public void increaseRate() {
+        heartRate++;
+    }
+
+    public void decreaseRate() {
+        heartRate--;
+    }
+}
+
+// ----- Adapter (converts HeartModel to BeatModel) -----
+class HeartAdapter implements BeatModel {
+
+    private HeartModel heart;
+
+    public HeartAdapter(HeartModel heart) {
+        this.heart = heart;
+    }
+
+    @Override
+    public int getBPM() {
+        return heart.getHeartRate();  // adapting method
+    }
+
+    @Override
+    public void start() {
+        System.out.println("Heart beating started...");
+    }
+
+    @Override
+    public void stop() {
+        System.out.println("Heart beating stopped...");
+    }
+}
+
+// ----- CLIENT TEST -----
+public class Main {
+    public static void main(String[] args) {
+
+        HeartModel heart = new HeartModel();        // Adaptee
+        BeatModel beatModel = new HeartAdapter(heart);  // Adapter
+
+        System.out.println("---- Testing Heart to Beat Model Adapter ----");
+
+        beatModel.start();
+        System.out.println("Current BPM: " + beatModel.getBPM());
+
+        // heart rate changes internally
+        heart.increaseRate();
+        System.out.println("After heart rate increase, BPM: " + beatModel.getBPM());
+
+        beatModel.stop();
+    }
+}
+
+
+2.
+a)
+
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BOARD)
+LED1 = 22
+GPIO.setup(LED1,GPIO.OUT)
+while True:
+	GPIO.output(LED1,True)
+	time.sleep(2)
+	GPIO.output(LED1,False)
+	time.sleep(2)
+
+
+b)
+
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BOARD)
+
+# Define pins
+LED1 = 22
+LED2 = 18
+SW1 = 15
+SW2 = 16
+
+# Setup
+GPIO.setup(LED1, GPIO.OUT)
+GPIO.setup(LED2, GPIO.OUT)
+GPIO.setup(SW1, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(SW2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+print("Press switches to turn ON corresponding LEDs...")
+
+while True:
+  # Switch 1 controls LED 1
+  if GPIO.input(SW1) == GPIO.HIGH:
+      GPIO.output(LED1, True)
+  else:
+      GPIO.output(LED1, False)
+
+  # Switch 2 controls LED 2
+  if GPIO.input(SW2) == GPIO.HIGH:
+      GPIO.output(LED2, True)
+  else:
+      GPIO.output(LED2, False)
+
+  time.sleep(0.1)  # small delay for stability
+
+
+c)
+
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BOARD)
+LED = 22
+GPIO.setup(LED, GPIO.OUT)
+
+# Read on and off times from file
+# 1.5 ON time, 0.5 OFF time
+with open("timing.txt", "r") as f:
+    on_time, off_time = map(float, f.read().split())
+
+# Blink LED forever
+while True:
+    GPIO.output(LED, True)
+    time.sleep(on_time)
+    GPIO.output(LED, False)
+    time.sleep(off_time)
+
+File: timing.txt
+1.5 0.5

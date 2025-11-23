@@ -1,0 +1,192 @@
+slip 8
+
+1.
+// ----- State Interface -----
+interface State {
+    void insertCoin();
+    void ejectCoin();
+    void turnCrank();
+    void dispense();
+}
+
+// ----- Concrete States -----
+
+// No Coin State
+class NoCoinState implements State {
+    GumballMachine machine;
+
+    NoCoinState(GumballMachine machine) {
+        this.machine = machine;
+    }
+
+    public void insertCoin() {
+        System.out.println("Coin inserted.");
+        machine.setState(machine.hasCoinState);
+    }
+
+    public void ejectCoin() {
+        System.out.println("No coin to eject.");
+    }
+
+    public void turnCrank() {
+        System.out.println("Insert coin first.");
+    }
+
+    public void dispense() {
+        System.out.println("Pay first!");
+    }
+}
+
+// Has Coin State
+class HasCoinState implements State {
+    GumballMachine machine;
+
+    HasCoinState(GumballMachine machine) {
+        this.machine = machine;
+    }
+
+    public void insertCoin() {
+        System.out.println("Already inserted a coin.");
+    }
+
+    public void ejectCoin() {
+        System.out.println("Coin returned.");
+        machine.setState(machine.noCoinState);
+    }
+
+    public void turnCrank() {
+        System.out.println("Crank turned...");
+        machine.setState(machine.soldState);
+    }
+
+    public void dispense() {
+        System.out.println("Turn crank to get gumball.");
+    }
+}
+
+// Sold State
+class SoldState implements State {
+    GumballMachine machine;
+
+    SoldState(GumballMachine machine) {
+        this.machine = machine;
+    }
+
+    public void insertCoin() {
+        System.out.println("Please wait... dispensing.");
+    }
+
+    public void ejectCoin() {
+        System.out.println("Already turned the crank.");
+    }
+
+    public void turnCrank() {
+        System.out.println("Turning twice doesn’t get another gumball.");
+    }
+
+    public void dispense() {
+        machine.releaseBall();
+
+        if (machine.count > 0)
+            machine.setState(machine.noCoinState);
+        else {
+            System.out.println("Oops! Out of gumballs.");
+            machine.setState(machine.soldOutState);
+        }
+    }
+}
+
+// Sold Out State
+class SoldOutState implements State {
+    GumballMachine machine;
+
+    SoldOutState(GumballMachine machine) {
+        this.machine = machine;
+    }
+
+    public void insertCoin() {
+        System.out.println("Machine is sold out.");
+    }
+
+    public void ejectCoin() {
+        System.out.println("No coin inserted.");
+    }
+
+    public void turnCrank() {
+        System.out.println("Nothing happens.");
+    }
+
+    public void dispense() {
+        System.out.println("No gumball to dispense.");
+    }
+}
+
+// ----- GumballMachine (Context Class) -----
+class GumballMachine {
+    State noCoinState;
+    State hasCoinState;
+    State soldState;
+    State soldOutState;
+
+    State state;
+    int count;
+
+    GumballMachine(int numberOfGumballs) {
+        this.count = numberOfGumballs;
+
+        noCoinState = new NoCoinState(this);
+        hasCoinState = new HasCoinState(this);
+        soldState = new SoldState(this);
+        soldOutState = new SoldOutState(this);
+
+        if (count > 0)
+            state = noCoinState;
+        else
+            state = soldOutState;
+    }
+
+    void insertCoin() {
+        state.insertCoin();
+    }
+
+    void ejectCoin() {
+        state.ejectCoin();
+    }
+
+    void turnCrank() {
+        state.turnCrank();
+        state.dispense();
+    }
+
+    void releaseBall() {
+        System.out.println("A gumball comes rolling out...");
+        if (count > 0) count--;
+    }
+
+    void setState(State s) {
+        state = s;
+    }
+}
+
+// ----- MAIN -----
+public class Main {
+    public static void main(String[] args) {
+        GumballMachine machine = new GumballMachine(2);
+
+        System.out.println("\n---- First Customer ----");
+        machine.insertCoin();
+        machine.turnCrank();
+
+        System.out.println("\n---- Second Customer ----");
+        machine.insertCoin();
+        machine.turnCrank();
+
+        System.out.println("\n---- Third Customer (No gumballs) ----");
+        machine.insertCoin();
+        machine.turnCrank();
+    }
+}
+
+
+2.
+

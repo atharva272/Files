@@ -1,0 +1,90 @@
+slip 1
+
+import java.io.*;
+
+class LowerCaseInputStream extends FilterInputStream {
+
+    protected LowerCaseInputStream(InputStream in) {
+        super(in);
+    }
+
+    @Override
+    public int read() throws IOException {
+        int c = super.read();
+        return (c == -1 ? c : Character.toLowerCase((char) c));
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int result = super.read(b, off, len);
+        if (result != -1) {
+            for (int i = off; i < off + result; i++) {
+                b[i] = (byte) Character.toLowerCase((char) b[i]);
+            }
+        }
+        return result;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        try {
+            InputStream in = new LowerCaseInputStream(System.in);
+
+            System.out.println("Enter text (Press Ctrl + Z then Enter to stop on Windows):");
+
+            int c;
+            while ((c = in.read()) != -1) {
+                System.out.print((char) c);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+
+2.
+
+#include <ESP8266WiFi.h>
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.disconnect();  // disconnect previously connected access point 
+  delay(200); // delay 200ms
+
+  Serial.println("***** WiFi Scan Started *****");
+}
+
+void loop() {
+  
+  int n = WiFi.scanNetworks(); // WiFi.scanNetworks will return the number of networks found
+   
+  Serial.println("Scan done");
+  
+  if (n == 0)
+    Serial.println("No Network Found");
+  else
+  {
+    Serial.print(n);
+    Serial.println(" Networks found");
+    for (int i = 0; i < n; ++i)
+    {
+      // Print SSID, RSSI, MAC, Encryption for each network found
+      Serial.print(i + 1);  //Sr. No
+      Serial.print(": ");
+      Serial.print(WiFi.SSID(i)); //SSID
+      Serial.print(" (");
+      Serial.print(WiFi.RSSI(i)); //Signal Strength
+      Serial.print(") MAC:");
+      Serial.print(WiFi.BSSIDstr(i));
+      Serial.println((WiFi.encryptionType(i) == ENC_TYPE_NONE)? " Unsecured" : " Secured" );
+      delay(10);
+    }
+  }
+  Serial.println("");
+
+  delay(6000); // delay 6sec 
+} 

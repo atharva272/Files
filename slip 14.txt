@@ -1,0 +1,157 @@
+slip 14
+
+1.
+
+// ----- Command Interface -----
+interface Command {
+    void execute();
+}
+
+// ----- Receivers -----
+class Light {
+    public void on() {
+        System.out.println("Light is ON");
+    }
+    public void off() {
+        System.out.println("Light is OFF");
+    }
+}
+
+class GarageDoor {
+    public void up() {
+        System.out.println("Garage Door is OPEN");
+    }
+}
+
+class Stereo {
+    public void on() {
+        System.out.println("Stereo is ON");
+    }
+    public void setCD() {
+        System.out.println("Stereo is set for CD input");
+    }
+    public void setVolume(int level) {
+        System.out.println("Stereo volume set to " + level);
+    }
+}
+
+// ----- Concrete Commands -----
+class LightOnCommand implements Command {
+    Light light;
+    LightOnCommand(Light light) { this.light = light; }
+    public void execute() { light.on(); }
+}
+
+class LightOffCommand implements Command {
+    Light light;
+    LightOffCommand(Light light) { this.light = light; }
+    public void execute() { light.off(); }
+}
+
+class GarageDoorUpCommand implements Command {
+    GarageDoor door;
+    GarageDoorUpCommand(GarageDoor door) { this.door = door; }
+    public void execute() { door.up(); }
+}
+
+class StereoOnWithCDCommand implements Command {
+    Stereo stereo;
+    StereoOnWithCDCommand(Stereo stereo) { this.stereo = stereo; }
+    public void execute() {
+        stereo.on();
+        stereo.setCD();
+        stereo.setVolume(5);
+    }
+}
+
+// ----- Invoker (Remote Control) -----
+class RemoteControl {
+    Command slot;
+
+    public void setCommand(Command command) {
+        slot = command;
+    }
+
+    public void pressButton() {
+        slot.execute();
+    }
+}
+
+// ----- MAIN -----
+public class Main {
+    public static void main(String[] args) {
+
+        RemoteControl remote = new RemoteControl();
+
+        // Objects
+        Light light = new Light();
+        GarageDoor door = new GarageDoor();
+        Stereo stereo = new Stereo();
+
+        // Commands
+        Command lightOn = new LightOnCommand(light);
+        Command lightOff = new LightOffCommand(light);
+        Command garageUp = new GarageDoorUpCommand(door);
+        Command stereoOn = new StereoOnWithCDCommand(stereo);
+
+        // Test Light ON
+        System.out.println("---- Light ON ----");
+        remote.setCommand(lightOn);
+        remote.pressButton();
+
+        // Test Light OFF
+        System.out.println("---- Light OFF ----");
+        remote.setCommand(lightOff);
+        remote.pressButton();
+
+        // Test Garage Door UP
+        System.out.println("---- Garage Door UP ----");
+        remote.setCommand(garageUp);
+        remote.pressButton();
+
+        // Test Stereo ON
+        System.out.println("---- Stereo ON with CD ----");
+        remote.setCommand(stereoOn);
+        remote.pressButton();
+    }
+}
+
+
+2.
+
+#include <LiquidCrystal.h>
+LiquidCrystal lcd(13, 12, 11, 10, 9, 8); 
+const int SensorPin = 2;
+const int LEDPin = 7;
+void setup() {
+  pinMode(SensorPin, INPUT); 
+  pinMode(LEDPin, OUTPUT); 
+  lcd.begin(20, 4); 
+  lcd.print("Hello");
+  lcd.setCursor(0,0); 
+  lcd.print("  THE BRIGHT LIGHT    ");
+  lcd.setCursor(0,1);
+  lcd.print("  VIBRATION SENSOR");
+}
+void loop() {
+  if(digitalRead(SensorPin) == HIGH){
+    digitalWrite(LEDPin,HIGH);
+    lcd.setCursor(0,3); 
+    lcd.print(" Vibration Detected    "); 
+    delay(50);
+    lcd.setCursor(0,3); 
+    lcd.print(" Vibration Detected.    "); 
+    delay(70);
+    lcd.setCursor(0,3); 
+    lcd.print(" Vibration Detected..   "); 
+    delay(70);
+    lcd.setCursor(0,3); 
+    lcd.print(" Vibration Detected...   "); 
+    delay(70); 
+}
+  else{
+    digitalWrite(LEDPin,LOW);
+    lcd.setCursor(0,3);  lcd.print("    No Vibration       "); 
+   }
+}
+

@@ -1,0 +1,100 @@
+slip 6
+
+1.
+// Command Interface
+interface Command {
+    void execute();
+}
+
+// Receiver
+class Light {
+    public void on() {
+        System.out.println("Light is ON");
+    }
+    public void off() {
+        System.out.println("Light is OFF");
+    }
+}
+
+// Concrete Commands
+class LightOnCommand implements Command {
+    Light light;
+
+    LightOnCommand(Light light) {
+        this.light = light;
+    }
+    public void execute() {
+        light.on();
+    }
+}
+
+class LightOffCommand implements Command {
+    Light light;
+
+    LightOffCommand(Light light) {
+        this.light = light;
+    }
+    public void execute() {
+        light.off();
+    }
+}
+
+// Invoker
+class RemoteControl {
+    Command slot;  // only 1 slot for simplicity
+
+    public void setCommand(Command command) {
+        slot = command;
+    }
+
+    public void pressButton() {
+        slot.execute();
+    }
+}
+
+// MAIN
+public class Main {
+    public static void main(String[] args) {
+
+        Light livingRoomLight = new Light();
+
+        Command lightOn = new LightOnCommand(livingRoomLight);
+        Command lightOff = new LightOffCommand(livingRoomLight);
+
+        RemoteControl remote = new RemoteControl();
+
+        System.out.println("---- Press ON Button ----");
+        remote.setCommand(lightOn);
+        remote.pressButton();
+
+        System.out.println("---- Press OFF Button ----");
+        remote.setCommand(lightOff);
+        remote.pressButton();
+    }
+}
+
+
+2.
+
+int val;
+int tempPin = A0;
+
+void setup(){
+Serial.begin(9600);
+}
+
+void loop()
+{
+val = analogRead(tempPin);
+float mv = (val/1024.0) * 5000;
+float cel = mv / 10;
+float farh = (cel * 9) / 5 + 32;
+Serial.print("Temperature = ");
+Serial.print(cel);
+Serial.print(" *C,");
+Serial.print(farh);
+Serial.println(" *F");
+delay(1000);
+}
+
+

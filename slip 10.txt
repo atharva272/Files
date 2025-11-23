@@ -1,0 +1,147 @@
+slip 10
+
+1.
+// ---- Strategy Interfaces ----
+interface FlyBehavior {
+    void fly();
+}
+
+interface QuackBehavior {
+    void quack();
+}
+
+// ---- Concrete Fly Behaviors ----
+class FlyWithWings implements FlyBehavior {
+    public void fly() {
+        System.out.println("Flying with wings!");
+    }
+}
+
+class FlyNoWay implements FlyBehavior {
+    public void fly() {
+        System.out.println("I can't fly.");
+    }
+}
+
+// ---- Concrete Quack Behaviors ----
+class Quack implements QuackBehavior {
+    public void quack() {
+        System.out.println("Quack! Quack!");
+    }
+}
+
+class MuteQuack implements QuackBehavior {
+    public void quack() {
+        System.out.println("<< Silence >>");
+    }
+}
+
+// ---- Duck class (Context) ----
+abstract class Duck {
+
+    FlyBehavior flyBehavior;      // holds current fly behavior
+    QuackBehavior quackBehavior;  // holds current quack behavior
+
+    public void performFly() {
+        flyBehavior.fly();
+    }
+
+    public void performQuack() {
+        quackBehavior.quack();
+    }
+
+    public void swim() {
+        System.out.println("All ducks float!");
+    }
+
+    // Allow changing behaviors at runtime
+    public void setFlyBehavior(FlyBehavior fb) {
+        flyBehavior = fb;
+    }
+    public void setQuackBehavior(QuackBehavior qb) {
+        quackBehavior = qb;
+    }
+
+    public abstract void display();
+}
+
+// ---- A Concrete Duck ----
+class MallardDuck extends Duck {
+    MallardDuck() {
+        flyBehavior = new FlyWithWings();
+        quackBehavior = new Quack();
+    }
+    public void display() {
+        System.out.println("I'm a Mallard Duck!");
+    }
+}
+
+// ---- MAIN ----
+public class Main {
+    public static void main(String[] args) {
+
+        Duck duck = new MallardDuck();
+        duck.display();
+
+        // Default Behaviors
+        duck.performFly();
+        duck.performQuack();
+
+        // Change behavior at runtime
+        System.out.println("\n--- Changing Behaviors at Runtime ---");
+        duck.setFlyBehavior(new FlyNoWay());
+        duck.setQuackBehavior(new MuteQuack());
+
+        duck.performFly();
+        duck.performQuack();
+    }
+}
+
+2.
+
+a) Print a name 'n' times, where name and n are read from standard input, using for and while loops.
+
+Program:
+name = input("Enter your name: ")
+n = int(input("Enter how many times to print your name: "))
+
+# Using for loop
+print("\nUsing for loop:")
+for i in range(n):
+    print(name)
+
+# Using while loop
+print("\nUsing while loop:")
+i = 0
+while i < n:
+    print(name)
+    i += 1
+
+OUTPUT:
+Enter your name: JS
+Enter how many times to print your name: 3
+
+Using for loop:
+JS
+JS
+JS
+
+Using while loop:
+JS
+JS
+JS
+
+b) Handle Divided by Zero Exception.
+
+Program:
+
+a = int(input("Enter numerator: "))
+b = int(input("Enter denominator: "))
+
+# Handle divide by zero exception
+try:
+    result = a / b
+    print("Result =", result)
+except ZeroDivisionError:
+    print("Error: Division by zero is not allowed!")
+

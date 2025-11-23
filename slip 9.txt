@@ -1,0 +1,130 @@
+slip 9
+
+1.
+✅ 1. Employee.java (Model)
+public class Employee {
+    private int id;
+    private String name;
+    private String department;
+
+    public Employee() {}
+
+    public Employee(int id, String name, String department) {
+        this.id = id;
+        this.name = name;
+        this.department = department;
+    }
+
+    public void showInfo() {
+        System.out.println("Employee ID: " + id);
+        System.out.println("Employee Name: " + name);
+        System.out.println("Department: " + department);
+    }
+}
+
+✅ 2. HRService.java (Service Interface)
+public interface HRService {
+    Employee getEmployee();
+}
+
+✅ 3. HRServiceImpl.java (Service Implementation)
+public class HRServiceImpl implements HRService {
+
+    private Employee employee;
+
+    // Dependency Injection (Setter)
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    @Override
+    public Employee getEmployee() {
+        return employee;
+    }
+}
+
+✅ 4. HRConfig.java (Spring Configuration using Java-based config)
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class HRConfig {
+
+    @Bean
+    public Employee employee() {
+        return new Employee(101, "Karan", "Human Resource");
+    }
+
+    @Bean
+    public HRService hrService() {
+        HRServiceImpl service = new HRServiceImpl();
+        service.setEmployee(employee());   // DI
+        return service;
+    }
+}
+
+✅ 5. Main.java (Test Application)
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+public class Main {
+    public static void main(String[] args) {
+
+        AnnotationConfigApplicationContext context =
+                new AnnotationConfigApplicationContext(HRConfig.class);
+
+        HRService service = context.getBean(HRService.class);
+
+        System.out.println("---- HR Application ----");
+        service.getEmployee().showInfo();
+
+        context.close();
+    }
+}
+
+
+
+2.
+
+a) Read your name and print Hello message with name
+
+Program:
+name = input("Enter your name: ")
+
+# a hello message
+print("Hello", name, "welcome to Python programming!")
+
+OUTPUT: 
+Enter your name: JS  
+Hello JS welcome to Python programming!
+
+
+b) Word and character count of a given string.
+
+Program:
+text = input("Enter a string: ")
+
+# counting words and characters
+word_count = len(text.split())
+char_count = len(text)
+
+print("Number of words:", word_count)
+print("Number of characters:", char_count)
+
+OUTPUT: 
+Enter a string: Python is fun
+Number of words: 3
+Number of characters: 13
+
+c) Read two numbers and print their sum, difference, product and
+Program: 
+
+A = float(input(“Enter first number: “))
+B = float(input(“Enter second number: “))
+Print(“Sum:”, a + b)
+Print(“Difference:”, a – b)
+Print(“Product:”, a * b)
+If b != 0:
+    Print(“Division:”, a / b)
+Else:
+    Print(“Division: Infinity (division by zero)”)
+
